@@ -1,0 +1,87 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: rgb(220, 220, 220);
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.dark{
+  background-color: rgb(77, 2, 148);
+}
+
+.light{
+  background-color: rgb(247, 247, 247);
+}
+
+.pretty-json {
+  /*background: #1e1e1e;*/
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  overflow: auto;
+  max-height: 300px;
+  text-align: left;
+}
+
+.json-key {
+  color: #ff3300;
+}
+
+.json-string {
+  color: #009bfb;
+}
+
+.json-number {
+  color: #0070ff;
+}
+
+.json-boolean {
+  color: #569cd6;
+}
+
+.json-null {
+  color: #d16969;
+}
+
+.mark, mark {
+    padding: .1875em;
+    color: var(--bs-highlight-color);
+    background-color: #c677ff !important;
+}

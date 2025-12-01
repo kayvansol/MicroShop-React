@@ -1,0 +1,88 @@
+/* ============================= */
+/*   FINAL DATA TABLE (FORCE)    */
+/* ============================= */
+
+.data-table-wrapper {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  margin-top: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid #e3e3e3 !important;
+}
+
+/* Force table border model */
+.data-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+
+/* HEADER */
+.data-table thead {
+  background: #f1f1f1 !important;
+}
+
+/* خطوط بین سلول‌ها */
+.data-table th,
+.data-table td {
+  border: 1px solid #d6cbc2 !important; /* رنگ خطوط */
+  padding: 12px !important;
+  text-align: center !important;
+}
+
+.data-table thead th {
+  padding: 14px !important;
+  font-weight: 700 !important;
+  color: #333 !important;
+  font-size: 14px !important;
+  border-bottom: 2px solid #ddd !important;
+}
+
+/* ZEBRA EFFECT */
+.data-table tbody tr:nth-child(even) {
+  background: #dff7a8 !important;
+}
+
+/* ROW HOVER FORCE */
+.data-table tbody tr:hover {
+  background: #f8ce72 !important;
+  transition: background 0.25s ease !important;
+}
+
+/* CELL PADDING */
+.data-table td {
+  padding: 12px !important;
+  font-size: 14px !important;
+  border-bottom: 1px solid #eee !important;
+  color: #222 !important;
+}
+
+/* Buttons area */
+.table-actions {
+  white-space: nowrap !important;
+}
+
+.table-actions button {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+}
+
+/********/
+
+.row-add-anim {
+  animation: slideFade 0.5s ease-out;
+}
+
+@keyframes slideFade {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px);
+    background-color: #e6ffe6;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+    background-color: white;
+  }
+}

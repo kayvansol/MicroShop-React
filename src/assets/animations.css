@@ -1,0 +1,58 @@
+.page-fade {
+  animation: pageFade 0.5s ease;
+}
+
+@keyframes pageFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.modal.fade .modal-dialog {
+  transform: scale(0.85);
+  opacity: 0;
+  transition: all 0.35s ease-in-out;
+}
+
+.modal.fade.show .modal-dialog {
+  transform: scale(1);
+  opacity: 1;
+}
+
+
+
+.toast-enter {
+  animation: toastSlide 0.35s ease-out forwards;
+}
+
+.toast-exit {
+  animation: toastSlideOut 0.35s ease-in forwards;
+}
+
+@keyframes toastSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+}

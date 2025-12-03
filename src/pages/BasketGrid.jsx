@@ -3,8 +3,10 @@ import loadingimg from "../assets/b.gif";
 import { nullsToZero } from "../assets/Utils";
 import client from "../api/axiosClient";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function BasketGrid({ onAdd, onRemove }) {
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,27 +14,50 @@ export default function BasketGrid({ onAdd, onRemove }) {
   const [animateId, setAnimateId] = useState(null);
   const [refresh, setRefresh] = useState("");
 
-  const getProducts = async () => {
-    try {
-      // ایجاد وقفه مصنوعی 5 ثانیه
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+  const navigate = useNavigate();
 
-      const res = await client.post("/products/GetAllProducts", "{}");
-      setProducts(nullsToZero(res.data.data));
-    } catch (err) {
-      setError(
-        err.response
-          ? `${err.response.status} - ${JSON.stringify(err.response.data)}`
-          : err.message
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const productClick = () => {
+    navigate("/product");
+  }
 
   useEffect(() => {
-    getProducts();
+
+    const controller = new AbortController(); // برای لغو درخواست
+    const signal = controller.signal;
+
+    const load = async () => {
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        const res = await client.post(
+          "/api/products/GetAllProducts",
+          "{}",
+          { signal }
+        );
+
+        setProducts(nullsToZero(res.data.data));
+      } catch (err) {
+        if (err.name === "CanceledError" || err.message === "canceled") return;
+
+        setError(
+          err.response
+            ? `${err.response.status} - ${JSON.stringify(err.response.data)}`
+            : err.message
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      controller.abort();      // جلوگیری از memory leak
+    };
+
   }, [refresh]);
+
 
   if (loading)
     return (
@@ -71,16 +96,20 @@ export default function BasketGrid({ onAdd, onRemove }) {
 
   return (
     <>
-      <button
-        onClick={() => {
-          setRefresh(Date.now().toString());
-          setLoading(true);
-        }}
-        className="btn btn-success me-4"
-        style={{ marginBottom: "10px" }}
-      >
-        رفرش
-      </button>
+      <div style={{ marginBottom: "10px" }}>
+        <button
+          onClick={() => {
+            setRefresh(Date.now().toString());
+            setLoading(true);
+          }}
+          className="btn btn-success me-4"
+        >
+          رفرش
+        </button>&nbsp;&nbsp;
+        <button className="btn btn-primary me-4" onClick={productClick}>
+          افزودن کالا
+        </button>
+      </div>
       {/* Search Box */}
       <input
         type="text"

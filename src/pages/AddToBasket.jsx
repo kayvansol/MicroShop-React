@@ -1,11 +1,12 @@
-import React, { useReducer, useState, useEffect } from "react";
+import React, { useReducer, useState, useEffect, useCallback } from "react";
 import { basketReducer, initialBasket } from "../assets/basketReducer";
 import BasketGrid from "./BasketGrid";
 import loadingimg from "../assets/b.gif";
 import client from "../api/axiosClient";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import "../assets/basket-anim.css";
 import { prettyJson } from "../assets/prettyJson";
+import { useNavigate } from "react-router-dom";
 
 const BasketLauncher = () => {
   const [state, dispatch] = useReducer(basketReducer, initialBasket, (init) => {
@@ -41,47 +42,80 @@ const BasketLauncher = () => {
   }, [state]);
 
   const sendBasket = async () => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     setLoading(true);
     setError(null);
     setResponse(null);
 
-    function normalizeBasket(state) {
-      return {
-        ...state,
-        items: state.items.map((i) => ({
-          ...i,
-          productId: String(i.productId),
-        })),
-      };
-    }
+    // تبدیل productId به string قبل از ارسال
+    const payload = {
+      ...state,
+      items: state.items.map((i) => ({ ...i, productId: String(i.productId) })),
+    };
 
     try {
-      // ایجاد وقفه مصنوعی 5 ثانیه
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      const res = await client.post("/basket", normalizeBasket(state));
+      const res = await client.post("/basket", payload, {
+        signal,
+      });
+
+      toast.success("افزودن به سبد کالا انجام شد🎉");
       setResponse(res.data);
     } catch (err) {
+      toast.error("افزودن به سبد کالا انجام نشد");
+      if (err.name === "CanceledError") return;
       setError(err.response ? err.response.data : err.message);
     } finally {
       setLoading(false);
     }
+
+    //return () => controller.abort();
   };
 
-  const handleAddItem = (product) =>
-    dispatch({ type: "ADD_ITEM", payload: product });
+  const handleAddItem = useCallback(
+    (product) => dispatch({ type: "ADD_ITEM", payload: product }),
+    []
+  );
 
-  const handleRemoveItem = (productId) =>
-    dispatch({ type: "REMOVE_ITEM", payload: { productId } });
+  const handleRemoveItem = useCallback(
+    (productId) => dispatch({ type: "REMOVE_ITEM", payload: { productId } }),
+    []
+  );
 
   const totalPrice = state.items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
+  const navigate = useNavigate();
+
+  const checkoutClick = () => {
+    navigate("/checkout");
+  };
+
   return (
     <div className="container mt-4">
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          className: "",
+          duration: 3000,
+          style: {
+            background: "rgba(20,20,20,0.85)",
+            color: "#fff",
+            backdropFilter: "blur(10px)",
+            borderRadius: "12px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#4CAF50",
+              secondary: "white",
+            },
+          },
+        }}
+      />
 
       <div className="card">
         <div className="card-header">لیست کالاها</div>
@@ -184,9 +218,15 @@ const BasketLauncher = () => {
           {loading ? (
             <img src={loadingimg} width={150} alt="loading..." />
           ) : (
-            <button className="btn btn-info mt-3" onClick={sendBasket}>
-              افزودن به سبد
-            </button>
+            <div>
+              <button className="btn btn-success mt-3" onClick={checkoutClick}>
+                تسویه حساب
+              </button>
+              &nbsp;&nbsp;&nbsp;
+              <button className="btn btn-info mt-3" onClick={sendBasket}>
+                افزودن به سبد
+              </button>
+            </div>
           )}
 
           {response && (

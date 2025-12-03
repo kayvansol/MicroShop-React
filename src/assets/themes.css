@@ -1,0 +1,145 @@
+/* ------------------ DARK THEME ------------------ */
+.theme-dark {
+  --bg-color: radial-gradient(circle at top right, #1f1f1f, #0d0d0d 70%);
+  --box-bg: rgba(40, 40, 40, 0.55);
+  --box-border: rgba(255,255,255,0.05);
+  --text-color: #e6e6e6;
+}
+
+/* ------------------ NEON THEME ------------------ */
+.theme-neon {
+  --bg-color: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  --box-bg: rgba(0, 0, 0, 0.35);
+  --box-border: rgba(255,255,255,0.1);
+  --text-color: #d7d7ff;
+}
+
+/* ------------------ GLASS THEME ------------------ */
+.theme-glass {
+  --bg-color: linear-gradient(115deg, rgba(58,59,180,1) 0%, rgba(29,253,166,1) 100%);
+  --box-bg: rgba(255,255,255,0.25);
+  --box-border: rgba(255,255,255,0.4);
+  --text-color: #222;
+}
+
+/* ------------------ CYBER THEME ------------------ */
+.theme-cyber {
+  --bg-color:
+    radial-gradient(circle at 20% 20%, rgba(0,255,255,0.12) 0%, transparent 40%),
+    repeating-linear-gradient(0deg,
+      rgba(0,255,255,0.05),
+      rgba(0,255,255,0.05) 1px,
+      transparent 1px,
+      transparent 40px);
+  --box-bg: rgba(0, 20, 20, 0.35);
+  --box-border: rgba(0,255,255,0.25);
+  --text-color: #baffff;
+}
+
+/* -------- global styles using CSS variables -------- */
+.app-bg {
+  min-height: 100vh;
+  background: var(--bg-color);
+  background-size: cover;
+  background-attachment: fixed;
+  color: var(--text-color);
+  transition: background 0.8s ease-in-out, color 0.6s ease-in-out;
+}
+
+/* انیمیشن فعال‌شونده */
+.theme-animating {
+  animation: themeFade 0.6s ease-in-out;
+}
+
+@keyframes themeFade {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+.glass-box {
+  background: var(--box-bg);
+  border: 1px solid var(--box-border);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  transition: background 0.5s, border 0.5s;
+}
+
+/* -----------------------------------
+   Glass / Neon / Cyber Navbar
+----------------------------------- */
+
+.navbar-glass {
+  background: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.25);
+  transition: background 0.5s ease-in-out, border 0.5s ease-in-out;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+/* Bottom neon glow line */
+.navbar-glow-line {
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #00f2ff,
+    #7b2fff,
+    #ff00c8,
+    #00f2ff
+  );
+  background-size: 300%;
+  animation: glowSlide 8s linear infinite;
+}
+
+@keyframes glowSlide {
+  0% { background-position: 0%; }
+  100% { background-position: 300%; }
+}
+
+/* Navbar brand */
+.navbar-brand {
+  font-size: 1.3rem !important;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(255,255,255,0.25);
+}
+
+/* Nav links */
+.nav-link {
+  position: relative;
+  padding: 6px 12px !important;
+  margin: 0 4px;
+  border-radius: 10px;
+  color: var(--text-color) !important;
+  transition: 0.25s;
+}
+
+/* Glow hover */
+.nav-link:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 12px rgba(0,255,255,0.25);
+}
+
+/* Active item */
+.nav-link.active {
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 0 18px rgba(0,255,255,0.35);
+}
+
+/* Theme select */
+.theme-select {
+  background: rgba(255,255,255,0.1) !important;
+  color: var(--text-color) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 3px 8px;
+  transition: 0.3s;
+}
+
+.theme-select:hover {
+  box-shadow: 0 0 14px rgba(0,255,255,0.4);
+}

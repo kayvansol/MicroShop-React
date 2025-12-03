@@ -85,3 +85,63 @@
     color: var(--bs-highlight-color);
     background-color: #c677ff !important;
 }
+
+/*   App.jsx    */
+
+.glass-box {
+  background: rgba(255,255,255,0.12);  
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 20px;
+  overflow: visible !important;
+}
+
+/* --- Background Gradient (Original Colors Improved) --- */
+.app-bg {
+  min-height: 100vh;
+  background: linear-gradient(115deg, rgba(58,59,180,1) 0%, rgba(29,253,166,1) 100%);
+  background-attachment: fixed;
+  padding-bottom: 40px;
+}
+
+/* --- Glass Navbar --- */
+.glass-navbar {
+  background: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Hover Links */
+.nav-link-glass {
+  color: #eee !important;
+  font-weight: 500;
+  transition: 0.25s;
+}
+
+.nav-link-glass:hover {
+  color: #00ffe7 !important;
+  transform: translateY(-2px);
+}
+
+/* Active Link */
+.nav-link-glass.active {
+  color: #00e1ff !important;
+  font-weight: bold;
+}
+
+/* --- Glass Content Box --- */
+.glass-content {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+/* Fade animation */
+.fade-content {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

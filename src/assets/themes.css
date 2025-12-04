@@ -59,7 +59,7 @@
 .glass-box {
   background: var(--box-bg);
   border: 1px solid var(--box-border);
-  backdrop-filter: blur(14px);
+  /*backdrop-filter: blur(14px);*/
   border-radius: 22px;
   transition: background 0.5s, border 0.5s;
 }

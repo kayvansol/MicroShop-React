@@ -1,27 +1,69 @@
-import React, { useState } from "react";
-import client from '../api/axiosClient';
+import '../assets/order-payment.css';
+import React, { useEffect, useState } from "react";
+import client from "../api/axiosClient";
 import loadingimg from "../assets/b.gif";
+import toast, { Toaster } from "react-hot-toast";
 
 const OrderPaymentLauncher = () => {
+  const [orders, setOrders] = useState([]);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [search, setSearch] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [response, setResponse] = useState(null);
 
-  // ورودی کاربر
   const [correlationId, setCorrelationId] = useState("");
   const [orderId, setOrderId] = useState("");
   const [customerId, setCustomerId] = useState("");
-
-  // تاریخ‌ها (اختیاری)
   const [creationDate, setCreationDate] = useState("");
   const [created, setCreated] = useState("");
 
-  // ارسال payload با مقادیر کاربر
+  // -------------------
+  // Load Waiting Payment
+  // -------------------
+  const loadOrders = async () => {
+    setTableLoading(true);
+    toast.loading("در حال بارگذاری سفارش‌ها...");
+
+    try {
+      const res = await client.post("/Orders/WaitingPayments", {});
+      setOrders(res.data.data);
+
+      toast.dismiss();
+      toast.success("سفارش‌ها با موفقیت بارگذاری شدند");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("خطا در دریافت سفارش‌ها");
+    } finally {
+      setTableLoading(false);
+    }
+  };
+
+  const openOrdersModal = () => {
+    loadOrders();
+    setOpenModal(true);
+  };
+
+  const selectOrder = (o) => {
+    setCorrelationId(o.correlationID);
+    setOrderId(o.orderID);
+    setCustomerId(o.customerID);
+    setCreated(o.created);
+
+    toast.success(`سفارش ${o.orderID} انتخاب شد`);
+    setOpenModal(false);
+  };
+
+  // -------------------
+  // Send Payment
+  // -------------------
   const buildPayload = () => ({
-    correlationId: correlationId || "",
+    correlationId,
     creationDate: creationDate || new Date().toISOString(),
-    orderId: orderId ? Number(orderId) : 0,
-    customerId: customerId ? Number(customerId) : 0,
+    orderId: Number(orderId) || 0,
+    customerId: Number(customerId) || 0,
     created: created || new Date().toISOString(),
   });
 
@@ -30,134 +72,206 @@ const OrderPaymentLauncher = () => {
     setError(null);
     setResponse(null);
 
-    try {
-      const payload = buildPayload();
-      console.log("Payload:", payload);
+    const payload = buildPayload();
 
+    toast.loading("در حال ارسال پرداخت ...");
+
+    try {
       const res = await client.post("/orderpayment", payload);
+
       setResponse(res.data);
+
+      toast.dismiss();
+      toast.success("پرداخت با موفقیت ارسال شد");
     } catch (err) {
+      toast.dismiss();
+
       if (err.response) {
-        setError({ status: err.response.status, data: err.response.data });
-      } else if (err.request) {
-        setError({ message: "No response from server", details: err.message });
+        setError(err.response.data);
+        toast.error("خطای سرور در ارسال پرداخت");
       } else {
         setError({ message: err.message });
+        toast.error("خطا در ارتباط با سرور");
       }
     } finally {
       setLoading(false);
     }
   };
 
+  const filteredOrders = orders.filter((o) =>
+    JSON.stringify(o).toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">پرداخت سفارش</div>
-        <div className="card-body">
-          <div className="card mb-3">
-            <div className="card-body">
-              <div className="row g-3 align-items-end">
-                <div className="col-md-4">
-                  <label className="form-label">Correlation ID</label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    value={correlationId}
-                    onChange={(e) => setCorrelationId(e.target.value)}
-                    placeholder="correlationId"
-                  />
-                </div>
 
-                <div className="col-md-4">
-                  <label className="form-label">Order ID</label>
-                  <input
-                    className="form-control"
-                    type="number"
-                    value={orderId}
-                    onChange={(e) => setOrderId(e.target.value)}
-                    placeholder="orderId"
-                  />
-                </div>
+      <Toaster position="top-right" />
 
-                <div className="col-md-4">
-                  <label className="form-label">Customer ID</label>
-                  <input
-                    className="form-control"
-                    type="number"
-                    value={customerId}
-                    onChange={(e) => setCustomerId(e.target.value)}
-                    placeholder="customerId"
-                  />
-                </div>
+      {/* دکمه نمایش سفارش‌ها */}
+      <button className="btn btn-primary mb-4 px-4" onClick={openOrdersModal}>
+        سفارش‌های منتظر پرداخت
+      </button>
 
-                <div className="col-md-6">
-                  <label className="form-label">Creation Date (اختیاری)</label>
-                  <input
-                    className="form-control"
-                    type="datetime-local"
-                    onChange={(e) =>
-                      setCreationDate(
-                        e.target.value
-                          ? new Date(e.target.value).toISOString()
-                          : ""
-                      )
-                    }
-                  />
-                </div>
+      {/* ---------------- Modal ---------------- */}
+      {openModal && (
+        <div className="order-modal-backdrop">
+          <div className="order-modal">
 
-                <div className="col-md-6">
-                  <label className="form-label">Created (اختیاری)</label>
-                  <input
-                    className="form-control"
-                    type="datetime-local"
-                    onChange={(e) =>
-                      setCreated(
-                        e.target.value
-                          ? new Date(e.target.value).toISOString()
-                          : ""
-                      )
-                    }
-                  />
+            <div className="order-modal-header">
+              <h5>سفارش‌های منتظر پرداخت</h5>
+              <button className="btn-close" onClick={() => setOpenModal(false)} />
+            </div>
+
+            <div className="order-modal-body">
+              <input
+                type="text"
+                className="form-control search-box"
+                placeholder="جستجو..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              {tableLoading ? (
+                <div className="skeleton-list">
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} className="skeleton-line"></div>
+                  ))}
                 </div>
-              </div>
-              <br></br>
-              {loading ? (
-                <img
-                  style={{ marginBottom: "300px" }}
-                  src={loadingimg}
-                  alt="loading ..."
-                  width={200}
-                  height={200}
-                />
               ) : (
-                <button
-                  className="btn btn-info"
-                  onClick={sendOrderPayment}
-                  disabled={loading}
-                >
-                  {loading ? "در حال ارسال..." : "ارسال پرداخت"}
-                </button>
-              )}
+                <table className="styled-table">
+                  <thead>
+                    <tr>
+                      <th>CorrelationID</th>
+                      <th>OrderID</th>
+                      <th>CustomerID</th>
+                      <th>Created</th>
+                      <th></th>
+                    </tr>
+                  </thead>
 
-              {response && (
-                <div className="mt-4 card alert alert-success">
-                  <div className="card-body">
-                    <h5 className="card-title mb-2">پاسخ سرور</h5>
-                    <pre className="mb-0">
-                      {JSON.stringify(response, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
+                  <tbody>
+                    {filteredOrders.length === 0 && (
+                      <tr>
+                        <td colSpan="5" className="text-center text-muted py-4">
+                          نتیجه‌ای یافت نشد
+                        </td>
+                      </tr>
+                    )}
 
-              {error && (
-                <div className="mt-4 alert alert-danger" role="alert">
-                  <h5 className="alert-heading">خطا</h5>
-                  <pre className="mb-0">{JSON.stringify(error, null, 2)}</pre>
-                </div>
+                    {filteredOrders.map((o, index) => (
+                      <tr key={index} className={index % 2 ? "alt" : ""}>
+                        <td>{o.correlationID}</td>
+                        <td>{o.orderID}</td>
+                        <td>{o.customerID}</td>
+                        <td>{o.created}</td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-success"
+                            onClick={() => selectOrder(o)}
+                          >
+                            انتخاب
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
+
+            <div className="order-modal-footer">
+              <button className="btn btn-secondary" onClick={() => setOpenModal(false)}>
+                بستن
+              </button>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* ------------------ فرم اصلی ------------------ */}
+      <div className="card shadow-sm">
+        <div className="card-header bg-dark text-white">پرداخت سفارش</div>
+
+        <div className="card-body">
+          <div className="row g-3">
+
+            <div className="col-md-4">
+              <label className="form-label">Correlation ID</label>
+              <input
+                className="form-control"
+                value={correlationId}
+                onChange={(e) => setCorrelationId(e.target.value)}
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label">Order ID</label>
+              <input
+                className="form-control"
+                type="number"
+                value={orderId}
+                onChange={(e) => setOrderId(e.target.value)}
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label">Customer ID</label>
+              <input
+                className="form-control"
+                type="number"
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Creation Date</label>
+              <input
+                className="form-control"
+                type="datetime-local"
+                onChange={(e) =>
+                  setCreationDate(
+                    e.target.value ? new Date(e.target.value).toISOString() : ""
+                  )
+                }
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Created</label>
+              <input
+                className="form-control"
+                type="datetime-local"
+                onChange={(e) =>
+                  setCreated(
+                    e.target.value ? new Date(e.target.value).toISOString() : ""
+                  )
+                }
+              />
+            </div>
+          </div>
+
+          <br />
+
+          {loading ? (
+            <img src={loadingimg} width={100} />
+          ) : (
+            <button className="btn btn-success px-4" onClick={sendOrderPayment}>
+              ارسال پرداخت
+            </button>
+          )}
+
+          {response && (
+            <div className="alert alert-success mt-4">
+              <pre>{JSON.stringify(response, null, 2)}</pre>
+            </div>
+          )}
+
+          {error && (
+            <div className="alert alert-danger mt-4">
+              <pre>{JSON.stringify(error, null, 2)}</pre>
+            </div>
+          )}
         </div>
       </div>
     </div>

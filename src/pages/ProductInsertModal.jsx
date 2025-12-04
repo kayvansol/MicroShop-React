@@ -57,7 +57,7 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
 
       try {
         const res = await client.post(
-          "/api/Category/GetAllCategories",
+          "/Category/GetAllCategories",
           {
             statrtPage: 0,
             pageSize: 0,
@@ -113,7 +113,7 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
         },
       };
 
-      await client.post("/api/Products/InsertProduct", payload);
+      await client.post("/Products/InsertProduct", payload);
 
       toast.success("کالا با موفقیت ثبت شد 🎉");
 

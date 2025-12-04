@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import loadingimg from "../assets/b.gif";
-import { nullsToZero } from "../assets/Utils";
 import client from "../api/axiosClient";
 import toast from "react-hot-toast";
+import { nullsToZero } from "../assets/Utils";
 import { useNavigate } from "react-router-dom";
+import "../assets/basket-grid.css";
 
 export default function BasketGrid({ onAdd, onRemove }) {
 
@@ -16,30 +16,22 @@ export default function BasketGrid({ onAdd, onRemove }) {
 
   const navigate = useNavigate();
 
-  const productClick = () => {
-    navigate("/product");
-  }
-
   useEffect(() => {
 
-    const controller = new AbortController(); // برای لغو درخواست
+    const controller = new AbortController();
     const signal = controller.signal;
 
     const load = async () => {
-
       try {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        const res = await client.post(
-          "/api/products/GetAllProducts",
-          "{}",
-          { signal }
-        );
+        const res = await client.post("/products/GetAllProducts", "{}", {
+          signal,
+        });
 
         setProducts(nullsToZero(res.data.data));
       } catch (err) {
-        if (err.name === "CanceledError" || err.message === "canceled") return;
-
+        if (err.name === "CanceledError") return;
         setError(
           err.response
             ? `${err.response.status} - ${JSON.stringify(err.response.data)}`
@@ -51,126 +43,115 @@ export default function BasketGrid({ onAdd, onRemove }) {
     };
 
     load();
-
-    return () => {
-      controller.abort();      // جلوگیری از memory leak
-    };
-
+    return () => controller.abort();
   }, [refresh]);
 
-
-  if (loading)
-    return (
-      <div className="alert alert-info mt-3">
-        <img src={loadingimg} width={150} alt="loading..." />
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="alert alert-danger mt-3">
-        خطا در دریافت کالاها: <br />
-        {error}
-      </div>
-    );
-
-  if (products.length === 0)
-    return (
-      <div className="alert alert-warning mt-3">
-        هیچ کالایی در سیستم ثبت نشده است.
-      </div>
-    );
-
-  // -----------------------------------
-  // FILTER + HIGHLIGHT
-  // -----------------------------------
   const highlight = (name) => {
     if (!search) return name;
     const regex = new RegExp(`(${search})`, "gi");
-    return name.replace(regex, "<mark>$1</mark>");
+    return name.replace(regex, `<mark>$1</mark>`);
   };
 
   const filtered = products.filter((p) =>
     p.productName.toLowerCase().includes(search.toLowerCase())
   );
 
+  if (loading)
+    return (
+      <div className="row mt-3">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div key={i} className="col-6 col-md-4 col-lg-3 mb-4">
+            <div className="dk-skeleton"></div>
+          </div>
+        ))}
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="alert alert-danger mt-3">
+        ❌ خطا در دریافت کالاها <br /> {error}
+      </div>
+    );
+
   return (
     <>
-      <div style={{ marginBottom: "10px" }}>
+      {/* Top Buttons */}
+      <div className="gap-3 mb-3">
+        <button className="btn btn-primary" onClick={() => navigate("/product")}>
+          افزودن کالا
+        </button>
+        &nbsp;&nbsp;
         <button
           onClick={() => {
             setRefresh(Date.now().toString());
             setLoading(true);
           }}
-          className="btn btn-success me-4"
+          className="btn btn-success"
         >
           رفرش
-        </button>&nbsp;&nbsp;
-        <button className="btn btn-primary me-4" onClick={productClick}>
-          افزودن کالا
         </button>
       </div>
-      {/* Search Box */}
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="جستجوی کالا..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
 
-      <div className="row mt-3">
-        {filtered.map((p, index) => (
+      {/* Search Bar */}
+      <div className="input-group mb-3">
+        <span className="input-group-text">
+          <i className="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="جستجوی کالا..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* PRODUCT GRID */}
+      <div className="row">
+        {filtered.map((p) => (
           <div
             key={p.productId}
-            className="col-3"
+            className="col-6 col-md-4 col-lg-3 mb-4 dk-card-wrapper"
             onClick={() => {
-              toast.success(`${p.productName} به سبد افزوده شد 😊`);
-
-              onAdd(p); // اضافه کردن کالا
-              setAnimateId(p.productId); // انیمیشن
-              setTimeout(() => setAnimateId(null), 350);
-            }}
-            style={{
-              cursor: "pointer",
-              padding: 12,
-              border: "1px solid #44fe00ff",
-              borderRadius: 50,
-              marginBottom: 10,
-              marginRight: 10,
-              transition: "0.3s",
-              transform: animateId === p.productId ? "scale(1.07)" : "scale(1)",
-              boxShadow:
-                animateId === p.productId
-                  ? "0 0 20px rgba(255, 85, 0, 0.6)"
-                  : "none",
-              backgroundColor:
-                index % 2 === 0 ? "lightgoldenrodyellow" : "honeydew",
+              toast.success(`${p.productName} به سبد افزوده شد 🎉`);
+              onAdd(p);
+              setAnimateId(p.productId);
+              setTimeout(() => setAnimateId(null), 300);
             }}
           >
-            <h6
-              className="fw-bold"
-              dangerouslySetInnerHTML={{ __html: highlight(p.productName) }}
-            />
-
-            <div>Price: {Number(p.price).toLocaleString()}</div>
-
-            {p.quantity && (
-              <div className="text-secondary small">
-                Available: {p.quantity}
-              </div>
-            )}
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove(p.productId);
-              }}
-              className="btn btn-xs btn-danger mt-2"
-              style={{ padding: "2px 6px", fontSize: "12px" }}
+            <div
+              className={`dk-card ${animateId === p.productId ? "dk-bounce" : ""
+                }`}
             >
-              Remove
-            </button>
+              {/* Title */}
+              <div
+                className="dk-title"
+                dangerouslySetInnerHTML={{
+                  __html: highlight(p.productName),
+                }}
+              />
+
+              {/* Price */}
+              <div className="dk-price mt-2">
+                {Number(p.price).toLocaleString()} تومان
+              </div>
+
+              {p.quantity && (
+                <div className="dk-badge mt-2">موجودی: {p.quantity}</div>
+              )}
+
+              {/* Remove button */}
+              <button
+                className="dk-remove"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(p.productId);
+                }}
+              >
+                حذف کالا
+              </button>
+            </div>
           </div>
         ))}
       </div>

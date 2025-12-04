@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import client from "../api/axiosClient";
 import loadingimg from "../assets/b.gif";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutBasket = () => {
-  const [loading, setLoading] = useState(false); // loading تسویه حساب
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [response, setResponse] = useState(null);
 
@@ -14,22 +16,23 @@ const CheckoutBasket = () => {
   const [customerId, setCustomerId] = useState("");
 
   // -----------------------------
-  // Load Customer List on mount
+  // Load Customer List
   // -----------------------------
   useEffect(() => {
-
     const loadCustomers = async () => {
       setLoadingCustomers(true);
+      toast.loading("در حال بارگذاری لیست مشتریان...");
 
       try {
-        const res = await client.post(
-          "/api/Customer/GetAllCustomers",{}
-        );
-
-        console.log("Customers:", res.data);
-
+        const res = await client.post("/Customer/GetAllCustomers", {});
         setCustomers(res.data.data || []);
+
+        toast.dismiss();
+        toast.success("لیست مشتریان با موفقیت بارگذاری شد");
       } catch (err) {
+        toast.dismiss();
+        toast.error("خطا در دریافت مشتریان");
+
         setCustomerError(
           err.response
             ? `${err.response.status} - ${JSON.stringify(err.response.data)}`
@@ -44,122 +47,142 @@ const CheckoutBasket = () => {
   }, []);
 
   // -----------------------------
-  // Submit Checkout
+  // Checkout
   // -----------------------------
   const checkoutBasket = async () => {
     if (!customerId) {
-      alert("لطفاً یک مشتری انتخاب کنید");
+      toast.error("لطفاً یک مشتری انتخاب کنید");
       return;
     }
 
     const payload = {
-      customerId: Number(customerId),  // ارسال customerId
+      customerId: Number(customerId),
     };
 
     setLoading(true);
     setError(null);
     setResponse(null);
 
+    toast.loading("در حال ارسال به لیست منتظر پرداخت...");
+
     try {
       const res = await client.post("/basket/Checkout", payload);
       setResponse(res.data);
+
+      toast.dismiss();
+      toast.success("سفارش با موفقیت به لیست منتظر پرداخت اضافه شد");
     } catch (err) {
+      toast.dismiss();
+
       if (err.response) {
-        setError({
-          status: err.response.status,
-          data: err.response.data,
-        });
+        setError(err.response.data);
+        toast.error("خطای سرور در تسویه حساب");
       } else {
         setError({ message: err.message });
+        toast.error("خطا در ارتباط با سرور");
       }
     } finally {
       setLoading(false);
     }
   };
 
+  const navigate = useNavigate();
+
+  const paymentClick = () => {
+    navigate("/Payment");
+  };
+
   return (
-    <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">تسویه حساب</div>
+    <>
 
-        <div className="card-body">
+      <Toaster position="top-right" />
 
-          {/* LOAD CUSTOMERS ERROR */}
-          {customerError && (
-            <div className="alert alert-danger">
-              خطا در دریافت لیست مشتریان:<br/>
-              {customerError}
-            </div>
-          )}
+      <div className="container mt-4">
+        <div className="card shadow-sm">
+          <div className="card-header bg-primary text-white">تسویه حساب</div>
 
-          {/* CUSTOMER DROPDOWN */}
-          <div className="mb-3">
-            <label className="form-label">انتخاب مشتری</label>
+          <div className="card-body">
 
-            {loadingCustomers ? (
-              <div className="alert alert-info">
-                <img src={loadingimg} width={120} alt="loading..." />
-                <div>در حال بارگذاری مشتریان...</div>
+            {/* CUSTOMER LOAD ERROR */}
+            {customerError && (
+              <div className="alert alert-danger">
+                خطا در دریافت لیست مشتریان:<br />
+                {customerError}
               </div>
-            ) : (
-              <select
-                className="form-control"
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-              >
-                <option value="">-- انتخاب مشتری --</option>
+            )}
 
-                {customers.map((c) => (
-                  <option key={c.customerId} value={c.customerId}>
-                    {c.firstName + " " + c.lastName} (شماره : {c.customerId})
-                  </option>
-                ))}
-              </select>
+            {/* SELECT CUSTOMER */}
+            <div className="mb-3">
+              <label className="form-label">انتخاب مشتری</label>
+
+              {loadingCustomers ? (
+                <div className="alert alert-info d-flex flex-column align-items-center">
+                  <img src={loadingimg} width={80} alt="loading" />
+                  <div>در حال بارگذاری مشتریان...</div>
+                </div>
+              ) : (
+                <select
+                  className="form-control"
+                  value={customerId}
+                  onChange={(e) => {
+                    setCustomerId(e.target.value);
+                    toast.success(`مشتری ${e.target.value} انتخاب شد`);
+                  }}
+                >
+                  <option value="">-- انتخاب مشتری --</option>
+
+                  {customers.map((c) => (
+                    <option key={c.customerId} value={c.customerId}>
+                      {c.firstName} {c.lastName} (ID: {c.customerId})
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* CHECKOUT BUTTON */}
+            <div className="mt-4">
+              {loading ? (
+                <img src={loadingimg} alt="loading ..." width={140} />
+              ) : (
+                <div>
+                  <button
+                    className="btn btn-warning px-4"
+                    onClick={paymentClick}                    
+                  >
+                    فرم پرداخت سفارش
+                  </button>
+                  &nbsp;&nbsp;
+                  <button
+                    className="btn btn-success px-4"
+                    onClick={checkoutBasket}
+                    disabled={loadingCustomers || !customerId}
+                  >
+                    افزودن به لیست منتظر پرداخت
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* RESPONSE */}
+            {response && (
+              <div className="alert alert-success mt-4">
+                <h5>پاسخ سرور</h5>
+                <pre>{JSON.stringify(response, null, 2)}</pre>
+              </div>
+            )}
+
+            {/* ERROR */}
+            {error && (
+              <div className="alert alert-danger mt-4">
+                <h5>خطا</h5>
+                <pre>{JSON.stringify(error, null, 2)}</pre>
+              </div>
             )}
           </div>
-
-          <br />
-
-          {/* CHECKOUT BUTTON */}
-          {loading ? (
-            <img
-              style={{ marginBottom: "300px" }}
-              src={loadingimg}
-              alt="loading ..."
-              width={200}
-              height={200}
-            />
-          ) : (
-            <button
-              className="btn btn-info"
-              onClick={checkoutBasket}
-              disabled={loadingCustomers || !customerId}
-            >
-              تسویه
-            </button>
-          )}
-
-          {/* RESPONSE */}
-          {response && (
-            <div className="mt-4 card alert alert-success">
-              <div className="card-body">
-                <h5 className="card-title mb-2">پاسخ سرور</h5>
-                <pre className="mb-0">{JSON.stringify(response, null, 2)}</pre>
-              </div>
-            </div>
-          )}
-
-          {/* ERROR */}
-          {error && (
-            <div className="mt-4 alert alert-danger" role="alert">
-              <h5 className="alert-heading">خطا</h5>
-              <pre className="mb-0">{JSON.stringify(error, null, 2)}</pre>
-            </div>
-          )}
-
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

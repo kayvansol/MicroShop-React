@@ -1,0 +1,97 @@
+/* ------------------------------
+  PRODUCT CARD STYLE
+------------------------------ */
+.dk-card {
+  /*background: #fff;*/
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #ececec;
+  transition: 0.25s ease;
+  cursor: pointer;
+}
+
+.dk-card-wrapper:nth-child(odd) .dk-card {
+  background: #cdffcb;
+}
+
+.dk-card-wrapper:nth-child(even) .dk-card {
+  background: #fbffd3; /* خیلی روشن، شبیه Digikala */
+}
+
+.dk-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+  transform: translateY(-4px);
+}
+
+/* Title */
+.dk-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  height: 40px;
+  overflow: hidden;
+}
+
+/* Price */
+.dk-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #af69ff;
+}
+
+/* Quantity badge */
+.dk-badge {
+  font-size: 12px;
+  background: #f2f2f2;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #555;
+}
+
+/* Remove Button */
+.dk-remove {
+  width: 100%;
+  border-radius: 8px;
+  background: #ef394e;
+  border: none;
+  padding: 6px;
+  color: #fff;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.dk-remove:hover {
+  background: #d32f45;
+}
+
+/* Skeleton Loader */
+.dk-skeleton {
+  border-radius: 16px;
+  height: 150px;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: dk-loading 1.4s ease infinite;
+}
+
+@keyframes dk-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* Search highlight */
+mark {
+  background: #ffe08a;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* Bounce animation */
+.dk-bounce {
+  animation: dkBounce 0.35s ease-out;
+}
+
+@keyframes dkBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}

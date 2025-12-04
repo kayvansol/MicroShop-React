@@ -15,7 +15,7 @@ export default function ProductList() {
         try {
             await new Promise((resolve) => setTimeout(resolve, 3000));
 
-            const res = await client.post("/api/Products/GetAllProducts", {});
+            const res = await client.post("/Products/GetAllProducts", {});
             setProducts(res.data?.data || []);
             console.log(res.data?.data);
         } catch {

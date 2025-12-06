@@ -38,7 +38,7 @@
 
 /* -------- global styles using CSS variables -------- */
 .app-bg {
-  min-height: 100vh;
+  min-height: 90vh;
   background: var(--bg-color);
   background-size: cover;
   background-attachment: fixed;

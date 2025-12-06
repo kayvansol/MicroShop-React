@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import client from "../api/axiosClient";
+import client from "@lib/axios/axiosClient";
 import toast from "react-hot-toast";
 import ProductInsertModal from "./ProductInsertModal";
-import "../assets/basket-anim.css";
-import loadingimg from "../assets/b.gif";
+import "@shared/assets/css/basket-anim.css";
+import loadingimg from "@shared/assets/img/b.gif";
 
 export default function ProductList() {
 

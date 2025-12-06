@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import client from "../api/axiosClient";
+import client from "@lib/axios/axiosClient";
 import toast from "react-hot-toast";
-import { nullsToZero } from "../assets/Utils";
+import { nullsToZero } from "@shared/assets/js/Utils";
 import { useNavigate } from "react-router-dom";
-import "../assets/basket-grid.css";
+import "@shared/assets/css/basket-grid.css";
 
 export default function BasketGrid({ onAdd, onRemove }) {
 

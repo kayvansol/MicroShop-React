@@ -1,8 +1,9 @@
-import '../assets/order-payment.css';
+import '@shared/assets/css/order-payment.css';
 import React, { useEffect, useState } from "react";
-import client from "../api/axiosClient";
-import loadingimg from "../assets/b.gif";
+import client from "@lib/axios/axiosClient";
+import loadingimg from "@shared/assets/img/b.gif";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const OrderPaymentLauncher = () => {
   const [orders, setOrders] = useState([]);
@@ -19,6 +20,8 @@ const OrderPaymentLauncher = () => {
   const [customerId, setCustomerId] = useState("");
   const [creationDate, setCreationDate] = useState("");
   const [created, setCreated] = useState("");
+
+  const navigate = useNavigate();
 
   // -------------------
   // Load Waiting Payment
@@ -107,7 +110,10 @@ const OrderPaymentLauncher = () => {
 
       <Toaster position="top-right" />
 
-      {/* دکمه نمایش سفارش‌ها */}
+      <button className="btn btn-success mb-4 px-4" onClick={() => navigate("/Order")}>
+        لیست سفارش‌ها
+      </button>
+      &nbsp;&nbsp;
       <button className="btn btn-primary mb-4 px-4" onClick={openOrdersModal}>
         سفارش‌های منتظر پرداخت
       </button>

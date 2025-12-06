@@ -98,7 +98,7 @@
 
 /* --- Background Gradient (Original Colors Improved) --- */
 .app-bg {
-  min-height: 100vh;
+  min-height: 90vh;
   background: linear-gradient(115deg, rgba(58,59,180,1) 0%, rgba(29,253,166,1) 100%);
   background-attachment: fixed;
   padding-bottom: 40px;

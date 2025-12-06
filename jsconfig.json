@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "@/*": [
+                "*"
+            ],
+            "@app/*": [
+                "app/*"
+            ],
+            "@features/*": [
+                "features/*"
+            ],
+            "@shared/*": [
+                "shared/*"
+            ],
+            "@lib/*": [
+                "lib/*"
+            ],
+            "@routes/*": [
+                "routes/*"
+            ],
+            "@layouts/*": [
+                "layouts/*"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

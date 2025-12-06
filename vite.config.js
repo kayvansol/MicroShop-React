@@ -10,4 +10,15 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      "@": "/src",
+      "@app": "/src/app",
+      "@shared": "/src/shared",
+      "@features": "/src/features",
+      "@lib": "/src/lib", 
+      "@routes": "/src/routes", 
+      "@layouts": "/src/layouts"     
+    },
+  },
 })

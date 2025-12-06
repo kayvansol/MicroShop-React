@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast, { Toaster } from "react-hot-toast";
-import client from "../api/axiosClient";
+import client from "@lib/axios/axiosClient";
 
 // ----------------------
 // Validation Schema

@@ -1,11 +1,11 @@
 import React, { useReducer, useState, useEffect, useCallback } from "react";
-import { basketReducer, initialBasket } from "../assets/basketReducer";
-import BasketGrid from "./BasketGrid";
-import loadingimg from "../assets/b.gif";
-import client from "../api/axiosClient";
+import { basketReducer, initialBasket } from "@shared/assets/js/basketReducer";
+import BasketGrid from "@features/basket/BasketGrid";
+import loadingimg from "@shared/assets/img/b.gif";
+import client from "@lib/axios/axiosClient";
 import toast, { Toaster } from "react-hot-toast";
-import "../assets/basket-anim.css";
-import { prettyJson } from "../assets/prettyJson";
+import "@shared/assets/css/basket-anim.css";
+import { prettyJson } from "@shared/assets/js/prettyJson";
 import { useNavigate } from "react-router-dom";
 
 const BasketLauncher = () => {

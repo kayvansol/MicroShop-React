@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import client from "../api/axiosClient";
-import loadingimg from "../assets/b.gif";
+import client from "@lib/axios/axiosClient";
+import loadingimg from "@shared/assets/img/b.gif";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 

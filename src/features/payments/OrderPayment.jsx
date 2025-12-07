@@ -50,10 +50,12 @@ const OrderPaymentLauncher = () => {
   };
 
   const selectOrder = (o) => {
+
     setCorrelationId(o.correlationID);
     setOrderId(o.orderID);
     setCustomerId(o.customerID);
-    setCreated(o.created);
+    //setCreationDate(o.creationDate);
+    setCreated(new Date(o.created).toISOString());
 
     toast.success(`سفارش ${o.orderID} انتخاب شد`);
     setOpenModal(false);
@@ -147,11 +149,11 @@ const OrderPaymentLauncher = () => {
                 <table className="styled-table">
                   <thead>
                     <tr>
-                      <th>CorrelationID</th>
-                      <th>OrderID</th>
-                      <th>CustomerID</th>
-                      <th>Created</th>
                       <th></th>
+                      <th>تاریخ ایجاد</th>
+                      <th>شماره مشتری</th>
+                      <th>شماره سفارش</th>
+                      <th>شماره رهگیری</th>
                     </tr>
                   </thead>
 
@@ -166,10 +168,6 @@ const OrderPaymentLauncher = () => {
 
                     {filteredOrders.map((o, index) => (
                       <tr key={index} className={index % 2 ? "alt" : ""}>
-                        <td>{o.correlationID}</td>
-                        <td>{o.orderID}</td>
-                        <td>{o.customerID}</td>
-                        <td>{o.created}</td>
                         <td>
                           <button
                             className="btn btn-sm btn-success"
@@ -178,6 +176,10 @@ const OrderPaymentLauncher = () => {
                             انتخاب
                           </button>
                         </td>
+                        <td>{o.created}</td>
+                        <td>{o.customerID}</td>
+                        <td>{o.orderID}</td>
+                        <td>{o.correlationID}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -196,13 +198,16 @@ const OrderPaymentLauncher = () => {
 
       {/* ------------------ فرم اصلی ------------------ */}
       <div className="card shadow-sm">
-        <div className="card-header bg-dark text-white">پرداخت سفارش</div>
-
+        <div className="card-header bg-dark text-white">
+          <h5>
+            💳 پرداخت سفارش
+          </h5>
+        </div>
         <div className="card-body">
           <div className="row g-3">
 
             <div className="col-md-4">
-              <label className="form-label">Correlation ID</label>
+              <label className="form-label">شماره رهگیری</label>
               <input
                 className="form-control"
                 value={correlationId}
@@ -211,7 +216,7 @@ const OrderPaymentLauncher = () => {
             </div>
 
             <div className="col-md-4">
-              <label className="form-label">Order ID</label>
+              <label className="form-label">شماره سفارش</label>
               <input
                 className="form-control"
                 type="number"
@@ -221,7 +226,7 @@ const OrderPaymentLauncher = () => {
             </div>
 
             <div className="col-md-4">
-              <label className="form-label">Customer ID</label>
+              <label className="form-label">شماره مشتری</label>
               <input
                 className="form-control"
                 type="number"
@@ -230,7 +235,7 @@ const OrderPaymentLauncher = () => {
               />
             </div>
 
-            <div className="col-md-6">
+            <div className="col-md-6" style={{display:'none'}}>
               <label className="form-label">Creation Date</label>
               <input
                 className="form-control"
@@ -243,8 +248,8 @@ const OrderPaymentLauncher = () => {
               />
             </div>
 
-            <div className="col-md-6">
-              <label className="form-label">Created</label>
+            <div className="col-md-6" style={{display:'none'}}>
+              <label className="form-label">تاریخ ایجاد</label>
               <input
                 className="form-control"
                 type="datetime-local"
@@ -280,7 +285,7 @@ const OrderPaymentLauncher = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

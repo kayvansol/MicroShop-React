@@ -3,6 +3,7 @@ import client from "@lib/axios/axiosClient";
 import loadingimg from "@shared/assets/img/b.gif";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import {initialBasket } from "@shared/assets/js/basketReducer";
 
 const CheckoutBasket = () => {
   const [loading, setLoading] = useState(false);
@@ -70,6 +71,9 @@ const CheckoutBasket = () => {
       setResponse(res.data);
 
       toast.dismiss();
+
+      localStorage.setItem("basket", JSON.stringify(initialBasket));
+      
       toast.success("سفارش با موفقیت به لیست منتظر پرداخت اضافه شد");
     } catch (err) {
       toast.dismiss();

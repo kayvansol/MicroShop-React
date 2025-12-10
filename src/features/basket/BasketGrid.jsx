@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { nullsToZero } from "@shared/assets/js/Utils";
 import { useNavigate } from "react-router-dom";
 import "@shared/assets/css/basket-grid.css";
+import mobile from "@shared/assets/img/mobile.webp"
 
 export default function BasketGrid({ onAdd, onRemove }) {
 
@@ -131,7 +132,7 @@ export default function BasketGrid({ onAdd, onRemove }) {
                   __html: highlight(p.productName),
                 }}
               />
-
+              <img src={mobile} style={{width:"80px"}} ></img>
               {/* Price */}
               <div className="dk-price mt-2">
                 {Number(p.price).toLocaleString()} تومان

@@ -8,6 +8,7 @@ import OrderPayment from "@features/payments/OrderPayment";
 import ProductInsert from "@features/products/ProductList";
 import Orders from '@features/orders/Orders'
 import MainLayout from "@layouts/MainLayout";
+import PageNotFound from "@app/404";
 
 export default function AnimatedRoutes() {
     const location = useLocation();
@@ -16,7 +17,7 @@ export default function AnimatedRoutes() {
         <Routes>
             <Route element={<MainLayout />}>
                 <Route
-                    path="/"
+                    index
                     element={
                         <PageFade key={location.pathname}>
                             <Home />
@@ -60,6 +61,14 @@ export default function AnimatedRoutes() {
                     element={
                         <PageFade key={location.pathname}>
                             <Orders />
+                        </PageFade>
+                    }
+                />
+                <Route
+                    path="*"
+                    element={
+                        <PageFade key={location.pathname}>
+                            <PageNotFound />
                         </PageFade>
                     }
                 />

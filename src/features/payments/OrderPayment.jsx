@@ -3,9 +3,13 @@ import React, { useEffect, useState } from "react";
 import client from "@lib/axios/axiosClient";
 import loadingimg from "@shared/assets/img/b.gif";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";  
+import {useTitle} from "@hooks/useTitle";
 
 const OrderPaymentLauncher = () => {
+
+  useTitle("پرداخت");
+
   const [orders, setOrders] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);

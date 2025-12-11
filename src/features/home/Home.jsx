@@ -1,4 +1,5 @@
 import React, { useReducer } from 'react';  
+import {useTitle} from "@hooks/useTitle"
 
 const initialState = { count: 0 };  
 
@@ -12,10 +13,12 @@ function reducer(state, action) {
 
 export default function BasketForm() {
 
+  useTitle("خانه");
+  
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (  
-    <div>  
+    <div>        
       <p>تعداد: {state.count}</p>  
       <button onClick={() => dispatch({ type: 'increment' })}>+</button>  
       <button onClick={() => dispatch({ type: 'decrement' })}>-</button> 

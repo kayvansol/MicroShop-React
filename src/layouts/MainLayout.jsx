@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import "@shared/assets/css/themes.css";
+import { useLocalStorage } from "@hooks/useLocalStorage";
 
 function MainLayout() {
-  const [theme, setTheme] = useState(
-    localStorage.getItem("site-theme") || "theme-neon"
-  );
+
+  const [theme, setTheme] = useLocalStorage("site-theme", "theme-neon");
 
   useEffect(() => {
-    localStorage.setItem("site-theme", theme);
-
+    
     const root = document.querySelector(".app-bg");
     root.classList.add("theme-animating");
 
@@ -22,7 +21,6 @@ function MainLayout() {
 
   return (
     <div className={`app-bg ${theme}`}>
-      {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark navbar-glass">
         <div className="container">
           <NavLink className="navbar-brand fw-bold" to="/">
@@ -41,34 +39,22 @@ function MainLayout() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">
-                  Home
-                </NavLink>
+                <NavLink className="nav-link" to="/">Home</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/product">
-                  Product
-                </NavLink>
+                <NavLink className="nav-link" to="/product">Product</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/basket">
-                  Basket
-                </NavLink>
+                <NavLink className="nav-link" to="/basket">Basket</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/Checkout">
-                  Checkout
-                </NavLink>
+                <NavLink className="nav-link" to="/Checkout">Checkout</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/Payment">
-                  Payment
-                </NavLink>
+                <NavLink className="nav-link" to="/Payment">Payment</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/Order">
-                  Orders
-                </NavLink>
+                <NavLink className="nav-link" to="/Order">Orders</NavLink>
               </li>
             </ul>
 
@@ -86,7 +72,6 @@ function MainLayout() {
         </div>
       </nav>
 
-      {/* Content */}
       <div className="container glass-box mt-4 p-4 rounded-4 shadow-lg">
         <Outlet />
       </div>

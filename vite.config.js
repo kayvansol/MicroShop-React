@@ -18,7 +18,8 @@ export default defineConfig({
       "@features": "/src/features",
       "@lib": "/src/lib", 
       "@routes": "/src/routes", 
-      "@layouts": "/src/layouts"     
+      "@layouts": "/src/layouts", 
+      "@hooks": "/src/hooks" 
     },
   },
 })

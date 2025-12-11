@@ -3,9 +3,12 @@ import client from "@lib/axios/axiosClient";
 import toast from "react-hot-toast";
 import ProductInsertModal from "./ProductInsertModal";
 import "@shared/assets/css/basket-anim.css";
-import loadingimg from "@shared/assets/img/b.gif";
+import loadingimg from "@shared/assets/img/b.gif";  
+import {useTitle} from "@hooks/useTitle";
 
 export default function ProductList() {
+
+    useTitle("محصولات");
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);

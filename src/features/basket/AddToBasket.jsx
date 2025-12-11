@@ -6,13 +6,15 @@ import client from "@lib/axios/axiosClient";
 import toast, { Toaster } from "react-hot-toast";
 import "@shared/assets/css/basket-anim.css";
 import { prettyJson } from "@shared/assets/js/prettyJson";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";  
+import {useTitle} from "@hooks/useTitle";
+import { useBasketStorage } from "@hooks/useBasketStorage";
 
 const BasketLauncher = () => {
-  const [state, dispatch] = useReducer(basketReducer, initialBasket, (init) => {
-    const saved = localStorage.getItem("basket");
-    return saved ? JSON.parse(saved) : init;
-  });
+  
+  useTitle("افزودن به سبد خرید");
+  
+  const { state, dispatch } = useBasketStorage();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,7 +31,7 @@ const BasketLauncher = () => {
   );
 
   useEffect(() => {
-    localStorage.setItem("basket", JSON.stringify(state));
+    
     setPayloadText(
       JSON.stringify(
         state,

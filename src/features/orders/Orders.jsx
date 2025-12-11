@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import client from "@lib/axios/axiosClient";
 import toast, { Toaster } from "react-hot-toast";
 import OrderItemsModal from "./OrderItemsModal";
-import Badge from "./StatusBadge";
+import Badge from "./StatusBadge";  
+import {useTitle} from "@hooks/useTitle";
 
 export default function OrderListPage() {
+
+  useTitle("سفارشات");
+
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");   // ⬅️ اضافه شد

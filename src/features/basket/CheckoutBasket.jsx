@@ -3,9 +3,16 @@ import client from "@lib/axios/axiosClient";
 import loadingimg from "@shared/assets/img/b.gif";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import {initialBasket } from "@shared/assets/js/basketReducer";
+import {initialBasket } from "@shared/assets/js/basketReducer";  
+import {useTitle} from "@hooks/useTitle";
+import { useBasketStorage } from "@hooks/useBasketStorage";
 
 const CheckoutBasket = () => {
+  
+  useTitle("تسویه");
+
+  const { state: basketState, dispatch: basketDispatch } = useBasketStorage();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [response, setResponse] = useState(null);
@@ -67,13 +74,15 @@ const CheckoutBasket = () => {
     toast.loading("در حال ارسال به لیست منتظر پرداخت...");
 
     try {
+
       const res = await client.post("/basket/Checkout", payload);
       setResponse(res.data);
 
       toast.dismiss();
 
-      localStorage.setItem("basket", JSON.stringify(initialBasket));
-      
+      // ریست سبد با استفاده از هوک جدید
+      basketDispatch({ type: "LOAD_FROM_JSON", payload: initialBasket });
+
       toast.success("سفارش با موفقیت به لیست منتظر پرداخت اضافه شد");
     } catch (err) {
       toast.dismiss();

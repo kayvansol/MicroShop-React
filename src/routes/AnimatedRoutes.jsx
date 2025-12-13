@@ -8,7 +8,7 @@ import OrderPayment from "@features/payments/OrderPayment";
 import ProductInsert from "@features/products/ProductList";
 import Orders from '@features/orders/Orders'
 import MainLayout from "@layouts/MainLayout";
-import PageNotFound from "@app/404";
+import PageNotFound from "@pages/404";
 
 export default function AnimatedRoutes() {
     const location = useLocation();

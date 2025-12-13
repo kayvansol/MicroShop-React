@@ -19,7 +19,9 @@ export default defineConfig({
       "@lib": "/src/lib", 
       "@routes": "/src/routes", 
       "@layouts": "/src/layouts", 
-      "@hooks": "/src/hooks" 
+      "@hooks": "/src/hooks", 
+      "@services": "/src/services", 
+      "@pages": "/src/pages" 
     },
   },
 })

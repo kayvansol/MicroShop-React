@@ -3,14 +3,20 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast, { Toaster } from "react-hot-toast";
-import client from "@lib/axios/axiosClient";
+import { getAllCategories } from "@services/categoryService";
+import { insertProduct } from "@services/productService";
 
 // ----------------------
 // Validation Schema
 // ----------------------
 const schema = yup.object({
   productName: yup.string().required("نام کالا الزامی است"),
-  categoryId: yup.number().required("انتخاب گروه کالا الزامی است"),
+  categoryId: yup
+  .number()
+  .transform((value, originalValue) =>
+    originalValue === "" ? undefined : value
+  )
+  .required("انتخاب گروه کالا الزامی است"),
   price: yup
     .number()
     .typeError("قیمت باید عدد باشد")
@@ -52,28 +58,14 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
 
     const loadCats = async () => {
       setLoadingCats(true);
-
       setError(null);
 
       try {
-        const res = await client.post(
-          "/Category/GetAllCategories",
-          {
-            statrtPage: 0,
-            pageSize: 0,
-          },
-          { signal: controller.signal }
-        );
-
+        const data = await getAllCategories(controller.signal);
         if (!isMounted) return;
-
-        setCategories(res.data.data || []);
+        setCategories(data);
       } catch (err) {
-        // اگر درخواست لغو شد → خطا نیست
-        if (err.name === "CanceledError" || err.code === "ERR_CANCELED") {
-          console.log("⛔ درخواست لغو شد");
-          return;
-        }
+        if (err.name === "CanceledError" || err.code === "ERR_CANCELED") return;
 
         if (!isMounted) return;
 
@@ -104,16 +96,7 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
     setSubmitting(true);
 
     try {
-      const payload = {
-        addDto: {
-          ...data,
-          categoryId: Number(data.categoryId),
-          price: Number(data.price),
-          inventory: Number(data.inventory),
-        },
-      };
-
-      await client.post("/Products/InsertProduct", payload);
+      await insertProduct(data);
 
       toast.success("کالا با موفقیت ثبت شد 🎉");
 
@@ -137,7 +120,6 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
     <>
       <Toaster
         toastOptions={{
-          className: "",
           duration: 3000,
           style: {
             background: "rgba(20,20,20,0.85)",
@@ -153,14 +135,13 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
           },
         }}
       />
+
       <div>
         <button
           className="btn btn-primary me-4"
           style={{ marginTop: "10px", width: "130px" }}
-          onFocus={() => {
-            setError(null);
-          }}
           onClick={open}
+          onFocus={() => setError(null)}
         >
           ➕ افزودن کالا
         </button>
@@ -182,7 +163,7 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
       {show && (
         <div className="modal fade show d-block">
           <div className="modal-dialog">
-            <div className="modal-content">
+            <div className="modal-content position-relative">
               <div className="modal-header bg-dark text-white">
                 <div style={{ textAlign: "left" }}>
                   <button className="btn-close" onClick={close}></button>
@@ -193,14 +174,9 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
               </div>
 
               <form onSubmit={handleSubmit(submitForm)}>
-                <div className="modal-body">
-                  {/* Overlay Loader */}
+                <div className="modal-body position-relative">
                   {submitting && (
-                    <div
-                      className="position-absolute w-100 h-100 top-0 start-0 
-                                                bg-white bg-opacity-75 d-flex justify-content-center 
-                                                align-items-center"
-                    >
+                    <div className="position-absolute w-100 h-100 top-0 start-0 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
                       <div className="spinner-border"></div>
                     </div>
                   )}
@@ -228,17 +204,16 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
                       }`}
                       {...register("categoryId")}
                     >
-                      <option value="" style={{ textAlign: "right" }}>
-                        ... انتخاب
-                      </option>
-
+                      <option value="">... انتخاب</option>
                       {categories.map((cat) => (
-                        <option key={cat.categoryId} value={cat.categoryId}>
+                        <option
+                          key={cat.categoryId}
+                          value={cat.categoryId}
+                        >
                           {cat.categoryName}
                         </option>
                       ))}
                     </select>
-
                     <div className="invalid-feedback">
                       {errors.categoryId?.message}
                     </div>
@@ -279,7 +254,7 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
                   <button
                     type="button"
                     className="btn btn-warning"
-                    onClick={() => close()}
+                    onClick={close}
                   >
                     انصراف
                   </button>
@@ -289,7 +264,7 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
                     className="btn btn-secondary"
                     onClick={() => reset()}
                   >
-                    پاک‌ سازی
+                    پاک‌سازی
                   </button>
 
                   <button type="submit" className="btn btn-success">

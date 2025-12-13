@@ -4,7 +4,7 @@ import applyRequestInterceptor from "@lib/axios/interceptors/requestInterceptor"
 import applyResponseInterceptor from "@lib/axios/interceptors/responseInterceptor";
 
 const client = axios.create({
-  baseURL: "http://Consul2:8000",
+  baseURL: import.meta.env.VITE_BASE_URL,
   timeout: 15000,
   origin: true,
   headers: { 

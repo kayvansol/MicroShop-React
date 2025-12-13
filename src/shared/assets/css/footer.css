@@ -1,0 +1,93 @@
+/* ================= FOOTER BASE ================= */
+.app-footer {
+    background: var(--box-bg);
+    color: var(--text-color);
+    border-top: 1px solid var(--box-border);
+    backdrop-filter: blur(16px);
+    transition: all 0.6s ease;
+  }
+  
+  /* ================= TITLES ================= */
+  .footer-title {
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-color);
+  }
+  
+  /* ================= TEXT ================= */
+  .footer-text {
+    font-size: 14px;
+    opacity: 0.85;
+    line-height: 1.8;
+  }
+  
+  /* ================= LINKS ================= */
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 1px;
+  }
+  
+  .footer-links a {
+    color: var(--text-color);
+    opacity: 0.85;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .footer-links a:hover {
+    opacity: 1;
+    padding-right: 6px;
+  }
+  
+  /* ================= SOCIAL ================= */
+  .footer-social span {
+    display: inline-block;
+    font-size: 18px;
+    margin: 0 6px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .footer-social span:hover {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+  
+  /* ================= DIVIDER ================= */
+  .footer-divider {
+    border: none;
+    height: 1px;
+    background: var(--box-border);
+    margin: 24px 0;
+  }
+  
+  /* ================= COPYRIGHT ================= */
+  .footer-copy {
+    opacity: 0.7;
+  }
+  
+  /* ================= THEME SPECIAL TOUCHES ================= */
+  
+  /* Neon glow */
+  .theme-neon .app-footer {
+    box-shadow: 0 -10px 30px rgba(120, 100, 255, 0.25);
+  }
+  
+  /* Glass clarity */
+  .theme-glass .app-footer {
+    box-shadow: 0 -10px 25px rgba(255, 255, 255, 0.25);
+  }
+  
+  /* Cyber glow */
+  .theme-cyber .app-footer {
+    box-shadow: 0 -10px 30px rgba(0, 255, 255, 0.35);
+  }
+  
+  /* Dark sub*
+  

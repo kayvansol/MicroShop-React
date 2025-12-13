@@ -1,11 +1,11 @@
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import AnimatedRoutes from "@routes/AnimatedRoutes";
+import Router from "@routes/Router";
 
 function App() {
   return (
     <BrowserRouter>
-      <AnimatedRoutes />
+      <Router />
     </BrowserRouter>
   );
 }

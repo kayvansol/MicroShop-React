@@ -10,7 +10,7 @@ import Orders from '@features/orders/Orders'
 import MainLayout from "@layouts/MainLayout";
 import PageNotFound from "@pages/404";
 
-export default function AnimatedRoutes() {
+export default function Router() {
     const location = useLocation();
 
     return (

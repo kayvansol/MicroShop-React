@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast, { Toaster } from "react-hot-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAllCategories } from "@services/categoryService";
 import { insertProduct } from "@services/productService";
 
@@ -12,11 +13,11 @@ import { insertProduct } from "@services/productService";
 const schema = yup.object({
   productName: yup.string().required("نام کالا الزامی است"),
   categoryId: yup
-  .number()
-  .transform((value, originalValue) =>
-    originalValue === "" ? undefined : value
-  )
-  .required("انتخاب گروه کالا الزامی است"),
+    .number()
+    .transform((value, originalValue) =>
+      originalValue === "" ? undefined : value
+    )
+    .required("انتخاب گروه کالا الزامی است"),
   price: yup
     .number()
     .typeError("قیمت باید عدد باشد")
@@ -27,19 +28,13 @@ const schema = yup.object({
     .min(0, "موجودی نمی‌تواند منفی باشد"),
 });
 
-export default function ProductInsertModal({ onInserted, onLoading }) {
+export default function ProductInsertModal() {
   const [show, setShow] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [loadingCats, setLoadingCats] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
 
   const open = () => setShow(true);
   const close = () => setShow(false);
 
-  // --------------------------------------------
-  // React Hook Form
-  // --------------------------------------------
   const {
     register,
     handleSubmit,
@@ -49,71 +44,38 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
     resolver: yupResolver(schema),
   });
 
-  // --------------------------------------------
-  // Load Categories
-  // --------------------------------------------
-  useEffect(() => {
-    let isMounted = true; // جلوگیری از setState روی کامپوننت Unmounted
-    const controller = new AbortController();
+  // --------------------
+  // Categories Query
+  // --------------------
+  const { data: categories = [], isLoading: loadingCats } = useQuery({
+    queryKey: ["categories"],
+    queryFn: ({ signal }) => getAllCategories(signal),
+    staleTime: 5 * 60 * 1000,
+    onError: () => {
+      toast.error("خطا در دریافت گروه کالاها");
+    },
+  });
 
-    const loadCats = async () => {
-      setLoadingCats(true);
-      setError(null);
-
-      try {
-        const data = await getAllCategories(controller.signal);
-        if (!isMounted) return;
-        setCategories(data);
-      } catch (err) {
-        if (err.name === "CanceledError" || err.code === "ERR_CANCELED") return;
-
-        if (!isMounted) return;
-
-        toast.error("خطا در دریافت گروه کالاها");
-
-        setError(
-          err.response
-            ? `${err.response.status} - ${JSON.stringify(err.response.data)}`
-            : err.message
-        );
-      } finally {
-        if (isMounted) setLoadingCats(false);
-      }
-    };
-
-    loadCats();
-
-    return () => {
-      isMounted = false;
-      controller.abort(); // لغو درخواست
-    };
-  }, []);
-
-  // --------------------------------------------
-  // Submit Handler
-  // --------------------------------------------
-  const submitForm = async (data) => {
-    setSubmitting(true);
-
-    try {
-      await insertProduct(data);
-
+  // --------------------
+  // Insert Mutation
+  // --------------------
+  const insertMutation = useMutation({
+    mutationFn: insertProduct,
+    onSuccess: () => {
       toast.success("کالا با موفقیت ثبت شد 🎉");
-
       reset();
       close();
-      onInserted(); // refresh list
-    } catch (err) {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+    },
+    onError: () => {
       toast.error("ثبت کالا انجام نشد");
+    },
+  });
 
-      setError(
-        err.response
-          ? `${err.response.status} - ${JSON.stringify(err.response.data)}`
-          : err.message
-      );
-    } finally {
-      setSubmitting(false);
-    }
+  const submitForm = (data) => {
+    insertMutation.mutate(data);
   };
 
   return (
@@ -136,46 +98,39 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
         }}
       />
 
-      <div>
+      {/* Refresh Button */}
+      <div className="mt-3">
         <button
           className="btn btn-primary me-4"
           style={{ marginTop: "10px", width: "130px" }}
           onClick={open}
-          onFocus={() => setError(null)}
         >
           ➕ افزودن کالا
         </button>
-
-        {!onLoading && (
-          <button
-            className="btn btn-success me-4"
-            style={{ marginTop: "10px", width: "130px" }}
-            onClick={() => {
-              onInserted(); // refresh list
-              setError(null);
-            }}
-          >
-            🔄️ رفرش
-          </button>
-        )}
+        <button
+          className="btn btn-success"
+          style={{ marginTop: "10px", width: "130px" }}
+          onClick={() =>
+            queryClient.invalidateQueries({
+              queryKey: ["products"],
+            })
+          }
+        >
+          🔄️ رفرش
+        </button>
       </div>
-
       {show && (
         <div className="modal fade show d-block">
           <div className="modal-dialog">
             <div className="modal-content position-relative">
               <div className="modal-header bg-dark text-white">
-                <div style={{ textAlign: "left" }}>
-                  <button className="btn-close" onClick={close}></button>
-                </div>
-                <div style={{ textAlign: "right", width: "90%" }}>
-                  <h5>افزودن کالا</h5>
-                </div>
+                <button className="btn-close" onClick={close}></button>
+                <h5 className="ms-auto">افزودن کالا</h5>
               </div>
 
               <form onSubmit={handleSubmit(submitForm)}>
                 <div className="modal-body position-relative">
-                  {submitting && (
+                  {insertMutation.isPending && (
                     <div className="position-absolute w-100 h-100 top-0 start-0 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
                       <div className="spinner-border"></div>
                     </div>
@@ -203,13 +158,11 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
                         errors.categoryId ? "is-invalid" : ""
                       }`}
                       {...register("categoryId")}
+                      disabled={loadingCats}
                     >
                       <option value="">... انتخاب</option>
                       {categories.map((cat) => (
-                        <option
-                          key={cat.categoryId}
-                          value={cat.categoryId}
-                        >
+                        <option key={cat.categoryId} value={cat.categoryId}>
                           {cat.categoryName}
                         </option>
                       ))}
@@ -267,19 +220,17 @@ export default function ProductInsertModal({ onInserted, onLoading }) {
                     پاک‌سازی
                   </button>
 
-                  <button type="submit" className="btn btn-success">
+                  <button
+                    type="submit"
+                    className="btn btn-success"
+                    disabled={insertMutation.isPending}
+                  >
                     ثبت کالا
                   </button>
                 </div>
               </form>
             </div>
           </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-danger mt-3">
-          <pre>{JSON.stringify(error, null, 2)}</pre>
         </div>
       )}
     </>
